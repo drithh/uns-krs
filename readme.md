@@ -1,8 +1,8 @@
 # UNS KRS
 
-Hacky way to fill KRS in Sebelas Maret University.  
-Reminder:
+Hacky way to fill KRS in Sebelas Maret University.
 
+> Reminder:  
 > This is not an official way to fill KRS in UNS. Use this script at your own discretion.  
 > I cannot be held responsible for any harm or consequences that may result from its use.
 
@@ -11,7 +11,7 @@ Reminder:
 Theres 2 ways to use this script.
 
 1. You can run index.ts in your terminal with `npm run start` or `yarn start`
-2. You can run directly every file in `src` folder with `ts-node` or `node` command or using command in `package.json` file.
+2. You can run directly every file in `src` folder with `ts-node` or `node` command or using command in `package.json` file (e.g. `npm run kuota` or `yarn kuota`)
 
 ## Installation
 
@@ -22,7 +22,7 @@ Theres 2 ways to use this script.
 
 ## Modules
 
-1. Ambil Mata Kuliah (ambil-maku.ts)
+1. Ambil Mata Kuliah (ambil-makul.ts)
 
    - Modul ini berfungsi untuk menginputkan mata kuliah yang akan diambil.
    - Data Kode Mata kuliah dan Kelas diambil dari file .env

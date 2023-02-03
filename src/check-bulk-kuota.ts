@@ -59,8 +59,10 @@ const instance = createInstance();
 const main = async () => {
   const response = await instance
     .get('https://siakad.uns.ac.id/registrasi/input-krs/index')
-    .catch((err) => {
-      throw err;
+    .catch((error) => {
+      console.debug(error);
+      console.error('Failed to get daftar-makul');
+      process.exit(1);
     });
   if (response.data && !response.data.includes('daftar-makul')) {
     console.log('Login failed');

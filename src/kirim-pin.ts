@@ -12,8 +12,8 @@ let IS_TOKEN_FOUND = false;
 
 const main = async () => {
   if (process.env.PIN === undefined) {
-    console.log('PIN belum diatur');
-    return;
+    console.error('PIN belum diatur');
+    process.exit(1);
   }
 
   const pin = process.env.PIN;
@@ -34,26 +34,42 @@ const main = async () => {
 };
 
 const getCSRFToken = async () => {
-  const response = await instance.get(
-    'https://siakad.uns.ac.id/registrasi/biodata/cek-pin-krs'
-  );
+  const response = await instance
+    .get('https://siakad.uns.ac.id/registrasi/biodata/cek-pin-krs', {
+      validateStatus: (status) => status >= 200 && status < 303,
+    })
+    .catch((error) => {
+      console.debug(error);
+      console.error('Gagal mengambil token CSRF');
+      process.exit(1);
+    });
   if (response.status == 200 && response.data.length > 0) {
     const regCSRF = /<meta name="csrf-token" content="(.*)">/;
     const csrfToken = response.data.match(regCSRF)[1];
     return csrfToken;
   }
+  if (response.status == 302) {
+    console.log('PIN sudah dikirim sebelumnya');
+    process.exit(0);
+  }
 };
 
 const kirimPin = async (token: string, pin: string) => {
-  const response = await instance.post(
-    'https://siakad.uns.ac.id/registrasi/biodata/cek-pin-krs',
-    new URLSearchParams({
-      _csrf: token,
-      'MhsFix[pin_baru]': pin,
-    }),
-    { validateStatus: (status) => status === 302 }
-  );
-  if (response.status == 302) {
+  const response = await instance
+    .post(
+      'https://siakad.uns.ac.id/registrasi/biodata/cek-pin-krs',
+      new URLSearchParams({
+        _csrf: token,
+        'MhsFix[pin_baru]': pin,
+      }),
+      { validateStatus: (status) => status === 302 }
+    )
+    .catch((error) => {
+      console.debug(error);
+      console.error('Gagal mengirim PIN');
+      process.exit(1);
+    });
+  if (response !== undefined && response.status === 302) {
     console.log('PIN berhasil dikirim');
     process.exit(0);
   }

@@ -27,9 +27,13 @@ const main = async () => {
 };
 
 const getMataKuliahDiambil = async () => {
-  const response = await instance.post(
-    'https://siakad.uns.ac.id/registrasi/input-krs/makul-diambil'
-  );
+  const response = await instance
+    .post('https://siakad.uns.ac.id/registrasi/input-krs/makul-diambil')
+    .catch((error) => {
+      console.debug(error);
+      console.error('Gagal mengambil kelas');
+      process.exit(1);
+    });
   if (response.status == 200 && response.data.length > 0) {
     let totalSks = 0;
     response.data.forEach((makul: MataKuliah) => {

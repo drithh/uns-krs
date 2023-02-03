@@ -31,8 +31,8 @@ const instance = createInstance();
 
 const main = async () => {
   if (process.env.KODE_MK === undefined) {
-    console.log('KODE_MK belum diatur');
-    return;
+    console.error('KODE_MK belum diatur');
+    process.exit(1);
   }
   const kodeMakul = process.env.KODE_MK;
   // setInterval(async () => {
@@ -55,8 +55,10 @@ const getJadwalMakul: any = async (kodeMakul: string) => {
         kodeMk: kodeMakul,
       })
     )
-    .catch((err) => {
-      throw err;
+    .catch((error) => {
+      console.debug(error);
+      console.error('Failed to get jadwal-makul');
+      process.exit(1);
     });
   if (response.data.length === 0) {
     console.log('Kode makul tidak ditemukan');

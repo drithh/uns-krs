@@ -13,8 +13,8 @@ let AMBIL_COUNT = 0;
 
 const main = async () => {
   if (process.env.KELAS === undefined || process.env.KODE_MK === undefined) {
-    console.log('Kelas atau Kode MK belum diatur');
-    return;
+    console.error('Kelas atau Kode MK belum diatur');
+    process.exit(1);
   }
 
   const kodeMk: Kode_MK = process.env.KODE_MK as Kode_MK;
@@ -27,14 +27,20 @@ const main = async () => {
 
 const ambilKelas = async (kodeMk: Kode_MK, kelas: Kelas) => {
   console.log(`Mencoba mengambil ${kodeMk} kelas ${kelas} ke-${++AMBIL_COUNT}`);
-  const response = await instance.post(
-    'https://siakad.uns.ac.id/registrasi/input-krs/simpan-ke-krs',
+  const response = await instance
+    .post(
+      'https://siakad.uns.ac.id/registrasi/input-krs/simpan-ke-krs',
 
-    new URLSearchParams({
-      kodeMk: kodeMk,
-      kelas: kelas,
-    })
-  );
+      new URLSearchParams({
+        kodeMk: kodeMk,
+        kelas: kelas,
+      })
+    )
+    .catch((error) => {
+      console.debug(error);
+      console.error('Gagal mengambil kelas');
+      process.exit(1);
+    });
   console.log(response.data);
   if (response.data.code == 200) {
     console.log('Kelas berhasil diambil');

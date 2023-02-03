@@ -1,8 +1,14 @@
 import axios from 'axios';
 import https from 'https';
 import { constants } from 'crypto';
+import dotenv from 'dotenv';
+dotenv.config();
 
 export const createInstance = () => {
+  if (process.env.DEBUG && process.env.DEBUG === '0') {
+    console.debug = function () {};
+  }
+
   if (
     process.env.PHPSESSID === undefined ||
     process.env.CSRF === undefined ||

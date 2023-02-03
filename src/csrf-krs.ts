@@ -16,9 +16,13 @@ const main = async () => {
 };
 
 const getCSRFToken = async () => {
-  const response = await instance.get(
-    'https://siakad.uns.ac.id/registrasi/input-krs/index'
-  );
+  const response = await instance
+    .get('https://siakad.uns.ac.id/registrasi/input-krs/index')
+    .catch((error) => {
+      console.debug(error);
+      console.error('Gagal mengambil token CSRF');
+      process.exit(1);
+    });
   if (response.status == 200 && response.data.length > 0) {
     const regCSRF = /<meta name="csrf-token" content="(.*)">/;
     const csrfToken = response.data.match(regCSRF)[1];
