@@ -31,7 +31,9 @@ const getMataKuliahDiambil = async () => {
     .post('https://siakad.uns.ac.id/registrasi/input-krs/makul-diambil')
     .catch((error) => {
       console.debug(error);
-      console.error('Gagal mengambil kelas');
+      console.error(
+        `Gagal mengambil kelas status-code: ${error.response.status}`
+      );
       process.exit(1);
     });
   if (response.status == 200 && response.data.length > 0) {

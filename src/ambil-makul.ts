@@ -38,7 +38,9 @@ const ambilKelas = async (kodeMk: Kode_MK, kelas: Kelas) => {
     )
     .catch((error) => {
       console.debug(error);
-      console.error('Gagal mengambil kelas');
+      console.error(
+        `Gagal mengambil kelas status-code: ${error.response.status}`
+      );
       process.exit(1);
     });
   console.log(response.data);

@@ -21,8 +21,8 @@ const instance = (0, axios_instance_1.createInstance)();
 let AMBIL_COUNT = 0;
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
     if (process.env.KELAS === undefined || process.env.KODE_MK === undefined) {
-        console.log('Kelas atau Kode MK belum diatur');
-        return;
+        console.error('Kelas atau Kode MK belum diatur');
+        process.exit(1);
     }
     const kodeMk = process.env.KODE_MK;
     const kelas = process.env.KELAS;
@@ -32,10 +32,16 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
 });
 const ambilKelas = (kodeMk, kelas) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(`Mencoba mengambil ${kodeMk} kelas ${kelas} ke-${++AMBIL_COUNT}`);
-    const response = yield instance.post('https://siakad.uns.ac.id/registrasi/input-krs/simpan-ke-krs', new URLSearchParams({
+    const response = yield instance
+        .post('https://siakad.uns.ac.id/registrasi/input-krs/simpan-ke-krs', new URLSearchParams({
         kodeMk: kodeMk,
         kelas: kelas,
-    }));
+    }))
+        .catch((error) => {
+        console.debug(error);
+        console.error(`Gagal mengambil kelas status-code: ${error.response.status}`);
+        process.exit(1);
+    });
     console.log(response.data);
     if (response.data.code == 200) {
         console.log('Kelas berhasil diambil');

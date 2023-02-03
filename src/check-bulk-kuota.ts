@@ -61,7 +61,9 @@ const main = async () => {
     .get('https://siakad.uns.ac.id/registrasi/input-krs/index')
     .catch((error) => {
       console.debug(error);
-      console.error('Failed to get daftar-makul');
+      console.error(
+        `Failed to get daftar-makul status-code: ${error.response.status}`
+      );
       process.exit(1);
     });
   if (response.data && !response.data.includes('daftar-makul')) {

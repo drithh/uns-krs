@@ -39,9 +39,10 @@ const main = async () => {
   const jadwalMakul: JadwalMakul[] = await getJadwalMakul(kodeMakul);
   jadwalMakul.forEach((jadwal) => {
     console.log(
-      `${jadwal.nama_hari.padEnd(6, ' ')} ${jadwal.jam.padEnd(7, ' ')} Kelas:${
-        jadwal.kelas
-      } Kuota:${jadwal.kuota} Peserta:${jadwal.peserta}`
+      `${jadwal.nama} ${jadwal.nama_hari.padEnd(6, ' ')} ${jadwal.jam.padEnd(
+        7,
+        ' '
+      )} Kelas:${jadwal.kelas} Kuota:${jadwal.kuota} Peserta:${jadwal.peserta}`
     );
   });
   // }, 5000);
@@ -53,11 +54,16 @@ const getJadwalMakul: any = async (kodeMakul: string) => {
       'https://siakad.uns.ac.id/registrasi/input-krs/jadwal-makul',
       new URLSearchParams({
         kodeMk: kodeMakul,
-      })
+      }),
+      {
+        validateStatus: (status) => status >= 200 && status < 303,
+      }
     )
     .catch((error) => {
       console.debug(error);
-      console.error('Failed to get jadwal-makul');
+      console.error(
+        `Failed to get jadwal-makul status-code: ${error.response.status}`
+      );
       process.exit(1);
     });
   if (response.data.length === 0) {

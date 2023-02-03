@@ -40,7 +40,9 @@ const getCSRFToken = async () => {
     })
     .catch((error) => {
       console.debug(error);
-      console.error('Gagal mengambil token CSRF');
+      console.error(
+        `Gagal mengambil token CSRF status-code: ${error.response.status}`
+      );
       process.exit(1);
     });
   if (response.status == 200 && response.data.length > 0) {
@@ -66,7 +68,7 @@ const kirimPin = async (token: string, pin: string) => {
     )
     .catch((error) => {
       console.debug(error);
-      console.error('Gagal mengirim PIN');
+      console.error(`Gagal mengirim PIN status-code: ${error.response.status}`);
       process.exit(1);
     });
   if (response !== undefined && response.status === 302) {

@@ -24,7 +24,13 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     }, REQUEST_DELAY_MILLISECONDS);
 });
 const getMataKuliahDiambil = () => __awaiter(void 0, void 0, void 0, function* () {
-    const response = yield instance.post('https://siakad.uns.ac.id/registrasi/input-krs/makul-diambil');
+    const response = yield instance
+        .post('https://siakad.uns.ac.id/registrasi/input-krs/makul-diambil')
+        .catch((error) => {
+        console.debug(error);
+        console.error(`Gagal mengambil kelas status-code: ${error.response.status}`);
+        process.exit(1);
+    });
     if (response.status == 200 && response.data.length > 0) {
         let totalSks = 0;
         response.data.forEach((makul) => {

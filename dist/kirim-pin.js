@@ -23,8 +23,8 @@ let KIRIM_PIN_COUNT = 0;
 let IS_TOKEN_FOUND = false;
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
     if (process.env.PIN === undefined) {
-        console.log('PIN belum diatur');
-        return;
+        console.error('PIN belum diatur');
+        process.exit(1);
     }
     const pin = process.env.PIN;
     const requestCSRF = setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
@@ -42,19 +42,37 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     }), REQUEST_DELAY_MILLISECONDS);
 });
 const getCSRFToken = () => __awaiter(void 0, void 0, void 0, function* () {
-    const response = yield instance.get('https://siakad.uns.ac.id/registrasi/biodata/cek-pin-krs');
+    const response = yield instance
+        .get('https://siakad.uns.ac.id/registrasi/biodata/cek-pin-krs', {
+        validateStatus: (status) => status >= 200 && status < 303,
+    })
+        .catch((error) => {
+        console.debug(error);
+        console.error(`Gagal mengambil token CSRF status-code: ${error.response.status}`);
+        process.exit(1);
+    });
     if (response.status == 200 && response.data.length > 0) {
         const regCSRF = /<meta name="csrf-token" content="(.*)">/;
         const csrfToken = response.data.match(regCSRF)[1];
         return csrfToken;
     }
+    if (response.status == 302) {
+        console.log('PIN sudah dikirim sebelumnya');
+        process.exit(0);
+    }
 });
 const kirimPin = (token, pin) => __awaiter(void 0, void 0, void 0, function* () {
-    const response = yield instance.post('https://siakad.uns.ac.id/registrasi/biodata/cek-pin-krs', new URLSearchParams({
+    const response = yield instance
+        .post('https://siakad.uns.ac.id/registrasi/biodata/cek-pin-krs', new URLSearchParams({
         _csrf: token,
         'MhsFix[pin_baru]': pin,
-    }), { validateStatus: (status) => status === 302 });
-    if (response.status == 302) {
+    }), { validateStatus: (status) => status === 302 })
+        .catch((error) => {
+        console.debug(error);
+        console.error(`Gagal mengirim PIN status-code: ${error.response.status}`);
+        process.exit(1);
+    });
+    if (response !== undefined && response.status === 302) {
         console.log('PIN berhasil dikirim');
         process.exit(0);
     }

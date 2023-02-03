@@ -36,8 +36,10 @@ const instance = (0, axios_instance_1.createInstance)();
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
     const response = yield instance
         .get('https://siakad.uns.ac.id/registrasi/input-krs/index')
-        .catch((err) => {
-        throw err;
+        .catch((error) => {
+        console.debug(error);
+        console.error(`Failed to get daftar-makul status-code: ${error.response.status}`);
+        process.exit(1);
     });
     if (response.data && !response.data.includes('daftar-makul')) {
         console.log('Login failed');
