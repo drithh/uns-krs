@@ -6,18 +6,19 @@ type Kode_MK = string;
 type Kelas = 'A' | 'B' | 'C' | 'D';
 
 const REQUEST_DELAY_MILLISECONDS: number = 500;
-
 const instance = createInstance();
+
+// do not change this
+let AMBIL_COUNT = 0;
 
 const main = async () => {
   if (process.env.KELAS === undefined || process.env.KODE_MK === undefined) {
-    console.log('Kelas atau Kode MK belum diisi');
+    console.log('Kelas atau Kode MK belum diatur');
     return;
   }
 
   const kodeMk: Kode_MK = process.env.KODE_MK as Kode_MK;
   const kelas: Kelas = process.env.KELAS as Kelas;
-  console.log(`Mengambil mata kuliah kode ${kodeMk} kelas ${kelas}`);
 
   setInterval(() => {
     ambilKelas(kodeMk, kelas);
@@ -25,6 +26,7 @@ const main = async () => {
 };
 
 const ambilKelas = async (kodeMk: Kode_MK, kelas: Kelas) => {
+  console.log(`Mencoba mengambil ${kodeMk} kelas ${kelas} ke-${++AMBIL_COUNT}`);
   const response = await instance.post(
     'https://siakad.uns.ac.id/registrasi/input-krs/simpan-ke-krs',
 

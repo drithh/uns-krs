@@ -3,10 +3,15 @@ import https from 'https';
 import { constants } from 'crypto';
 
 export const createInstance = () => {
-  if (process.env.PHPSESSID === undefined || process.env._csrf === undefined) {
-    throw new Error('PHPSESSID and _csrf must be defined in .env');
+  if (
+    process.env.PHPSESSID === undefined ||
+    process.env.CSRF === undefined ||
+    process.env.X_CSRF_TOKEN === undefined
+  ) {
+    throw new Error('PHPSESSID, CSRF, X_CSRF_TOKEN must be defined in .env');
   }
-  const cookie = `PHPSESSID=${process.env.PHPSESSID}; _csrf=${process.env._csrf}`;
+  const cookie = `PHPSESSID=${process.env.PHPSESSID}; _csrf=${process.env.CSRF}`;
+  const csrfToken = process.env.X_CSRF_TOKEN;
   return axios.create({
     headers: {
       accept:
@@ -23,8 +28,7 @@ export const createInstance = () => {
       'sec-gpc': '1',
       'upgrade-insecure-requests': '1',
       cookie: cookie,
-      'X-CSRF-Token':
-        '345MN_dUCa1gk4eZZKz_V_-z3co0OiYRedBupulw4kSIx2FDhw0_2zbyys82xcYuoISJ83UMRV4InBfepTizBQ==',
+      'X-CSRF-Token': csrfToken,
       'X-Requested-With': 'XMLHttpRequest',
       'content-type': 'application/x-www-form-urlencoded',
       origin: 'https://siakad.uns.ac.id',

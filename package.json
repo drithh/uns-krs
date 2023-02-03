@@ -9,7 +9,9 @@
     "start": "npx ts-node src/index.ts",
     "kuota": "npx ts-node src/check-kuota.ts",
     "ambil": "npx ts-node src/ambil-makul.ts",
-    "check": "npx ts-node src/check-diambil.ts"
+    "check": "npx ts-node src/check-diambil.ts",
+    "pin": "npx ts-node src/kirim-pin.ts",
+    "csrf": "npx ts-node src/csrf-krs.ts"
   },
   "keywords": [],
   "author": "",

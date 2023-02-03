@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { createInstance } from './axios-instance';
 import dotenv from 'dotenv';
 dotenv.config();
