@@ -52,6 +52,7 @@ const getCSRFToken = async () => {
   }
   if (response.status == 302) {
     console.log('PIN sudah dikirim sebelumnya');
+    console.log(response.headers['x-redirect']);
     process.exit(0);
   }
 };
@@ -73,6 +74,7 @@ const kirimPin = async (token: string, pin: string) => {
     });
   if (response !== undefined && response.status === 302) {
     console.log('PIN berhasil dikirim');
+    console.log(response.headers['x-redirect']);
     process.exit(0);
   }
 };

@@ -58,6 +58,7 @@ const getCSRFToken = () => __awaiter(void 0, void 0, void 0, function* () {
     }
     if (response.status == 302) {
         console.log('PIN sudah dikirim sebelumnya');
+        console.log(response.headers['x-redirect']);
         process.exit(0);
     }
 });
@@ -74,6 +75,7 @@ const kirimPin = (token, pin) => __awaiter(void 0, void 0, void 0, function* () 
     });
     if (response !== undefined && response.status === 302) {
         console.log('PIN berhasil dikirim');
+        console.log(response.headers['x-redirect']);
         process.exit(0);
     }
 });

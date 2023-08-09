@@ -44,6 +44,7 @@ const getJadwalMakul = (kodeMakul) => __awaiter(void 0, void 0, void 0, function
     });
     if (response.data.length === 0) {
         console.log('Kode makul tidak ditemukan');
+        console.log(response);
         process.exit(1);
     }
     return response.data;

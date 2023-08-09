@@ -68,6 +68,7 @@ const getJadwalMakul: any = async (kodeMakul: string) => {
     });
   if (response.data.length === 0) {
     console.log('Kode makul tidak ditemukan');
+    console.log(response);
     process.exit(1);
   }
   return response.data as JadwalMakul[];
