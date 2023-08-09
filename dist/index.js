@@ -18,6 +18,7 @@ const check_kuota_1 = __importDefault(require("./check-kuota"));
 const check_diambil_1 = __importDefault(require("./check-diambil"));
 const kirim_pin_1 = __importDefault(require("./kirim-pin"));
 const csrf_krs_1 = __importDefault(require("./csrf-krs"));
+const dotenv_1 = __importDefault(require("dotenv"));
 const prompts = require('prompts');
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
     // ask user which action to take
@@ -62,4 +63,13 @@ const askAction = () => __awaiter(void 0, void 0, void 0, function* () {
     });
     return action;
 });
-main();
+// if run directly, run main
+if (require.main === module) {
+    const envPath = process.argv.at(2) || '.env';
+    dotenv_1.default.config({
+        path: envPath,
+        override: true,
+    });
+    console.log(`Menggunakan konfigurasi dari ${envPath}`);
+    main();
+}

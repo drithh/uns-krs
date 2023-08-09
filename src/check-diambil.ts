@@ -1,6 +1,5 @@
 import { createInstance } from './axios-instance';
 import dotenv from 'dotenv';
-dotenv.config();
 
 type MataKuliah = {
   id: string;
@@ -53,6 +52,12 @@ const getMataKuliahDiambil = async () => {
 
 // if run directly, run main
 if (require.main === module) {
+  const envPath = process.argv.at(2) || '.env';
+  dotenv.config({
+    path: envPath,
+    override: true,
+  });
+  console.log(`Menggunakan konfigurasi dari ${envPath}`);
   main();
 }
 

@@ -14,7 +14,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const axios_instance_1 = require("./axios-instance");
 const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config();
 const REQUEST_DELAY_MILLISECONDS = 500;
 const instance = (0, axios_instance_1.createInstance)();
 // do not change this
@@ -50,6 +49,12 @@ const ambilKelas = (kodeMk, kelas) => __awaiter(void 0, void 0, void 0, function
 });
 // if run directly, run main
 if (require.main === module) {
+    const envPath = process.argv.at(2) || '.env';
+    dotenv_1.default.config({
+        path: envPath,
+        override: true,
+    });
+    console.log(`Menggunakan konfigurasi dari ${envPath}`);
     main();
 }
 exports.default = main;

@@ -81,6 +81,12 @@ const kirimPin = (token, pin) => __awaiter(void 0, void 0, void 0, function* () 
 });
 // if run directly, run main
 if (require.main === module) {
+    const envPath = process.argv.at(2) || '.env';
+    dotenv_1.default.config({
+        path: envPath,
+        override: true,
+    });
+    console.log(`Menggunakan konfigurasi dari ${envPath}`);
     main();
 }
 exports.default = main;

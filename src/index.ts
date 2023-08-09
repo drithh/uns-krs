@@ -4,6 +4,7 @@ import checkKuota from './check-kuota';
 import checkDiambil from './check-diambil';
 import kirimPIN from './kirim-pin';
 import csrfKRS from './csrf-krs';
+import dotenv from 'dotenv';
 const prompts = require('prompts');
 
 const main = async () => {
@@ -51,4 +52,13 @@ const askAction = async () => {
   return action;
 };
 
-main();
+// if run directly, run main
+if (require.main === module) {
+  const envPath = process.argv.at(2) || '.env';
+  dotenv.config({
+    path: envPath,
+    override: true,
+  });
+  console.log(`Menggunakan konfigurasi dari ${envPath}`);
+  main();
+}

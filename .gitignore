@@ -1,2 +1,6 @@
 node_modules
-.env
+# Ignore all .env files
+.env*
+
+# Except for .env.example
+!.env.example

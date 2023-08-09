@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const axios_instance_1 = require("./axios-instance");
 // load env
 const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config();
 const makulWhiteList = [
     'Business Intelligence',
     'Cyber Security',
@@ -133,6 +132,12 @@ const getJadwalMakul = (kodeMakul) => __awaiter(void 0, void 0, void 0, function
 });
 // if run directly, run main
 if (require.main === module) {
+    const envPath = process.argv.at(2) || '.env';
+    dotenv_1.default.config({
+        path: envPath,
+        override: true,
+    });
+    console.log(`Menggunakan konfigurasi dari ${envPath}`);
     main();
 }
 exports.default = main;
