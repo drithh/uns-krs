@@ -8,8 +8,12 @@ const axios_1 = __importDefault(require("axios"));
 const https_1 = __importDefault(require("https"));
 const crypto_1 = require("crypto");
 const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config();
-const createInstance = () => {
+const createInstance = (envPath) => {
+    dotenv_1.default.config({
+        path: envPath,
+        override: true,
+        debug: true,
+    });
     if (process.env.DEBUG && process.env.DEBUG === '0') {
         console.debug = function () { };
     }

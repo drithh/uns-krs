@@ -14,17 +14,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const axios_instance_1 = require("./axios-instance");
 const dotenv_1 = __importDefault(require("dotenv"));
-const instance = (0, axios_instance_1.createInstance)();
 const REQUEST_DELAY_MILLISECONDS = 500;
 // don't change this
 let GET_TOKEN_COUNT = 0;
-const main = () => __awaiter(void 0, void 0, void 0, function* () {
+const main = (envPath) => __awaiter(void 0, void 0, void 0, function* () {
+    dotenv_1.default.config({
+        path: envPath,
+        override: true,
+        debug: true,
+    });
+    const instance = (0, axios_instance_1.createInstance)(envPath);
     const requestCSRF = setInterval(() => {
         console.log(`Mencoba mengambil token CSRF ke-${++GET_TOKEN_COUNT} kali`);
-        getCSRFToken();
+        getCSRFToken(instance);
     }, REQUEST_DELAY_MILLISECONDS);
 });
-const getCSRFToken = () => __awaiter(void 0, void 0, void 0, function* () {
+const getCSRFToken = (instance) => __awaiter(void 0, void 0, void 0, function* () {
     const response = yield instance
         .get('https://siakad.uns.ac.id/registrasi/input-krs/index')
         .catch((error) => {
@@ -35,7 +40,9 @@ const getCSRFToken = () => __awaiter(void 0, void 0, void 0, function* () {
     if (response.status == 200 && response.data.length > 0) {
         const regCSRF = /<meta name="csrf-token" content="(.*)">/;
         const csrfToken = response.data.match(regCSRF)[1];
-        console.log(`Token CSRF didapatkan: ${csrfToken}`);
+        const regNama = /<span class="hidden-xs pl15">(.*)<\/span>/;
+        const nama = response.data.match(regNama)[1];
+        console.log(`Token CSRF didapatkan: ${csrfToken} untuk ${nama}`);
         console.log(`Silahkan copy token di atas dan paste ke file .env sebagai value X_CSRF_TOKEN`);
         process.exit(0);
     }
@@ -43,11 +50,7 @@ const getCSRFToken = () => __awaiter(void 0, void 0, void 0, function* () {
 // if run directly, run main
 if (require.main === module) {
     const envPath = process.argv.at(2) || '.env';
-    dotenv_1.default.config({
-        path: envPath,
-        override: true,
-    });
     console.log(`Menggunakan konfigurasi dari ${envPath}`);
-    main();
+    main(envPath);
 }
 exports.default = main;

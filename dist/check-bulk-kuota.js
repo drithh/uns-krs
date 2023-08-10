@@ -31,8 +31,12 @@ const makulWhiteList = [
     'Software Process',
     'Teknik Multimedia',
 ];
-const instance = (0, axios_instance_1.createInstance)();
-const main = () => __awaiter(void 0, void 0, void 0, function* () {
+const main = (envPath) => __awaiter(void 0, void 0, void 0, function* () {
+    const instance = (0, axios_instance_1.createInstance)(envPath);
+    dotenv_1.default.config({
+        path: envPath,
+        override: true,
+    });
     const response = yield instance
         .get('https://siakad.uns.ac.id/registrasi/input-krs/index')
         .catch((error) => {
@@ -60,7 +64,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
         const sks = ((_c = makul.match(regSKS)) === null || _c === void 0 ? void 0 : _c.at(1)) || undefined;
         const semester = ((_d = makul.match(regSemester)) === null || _d === void 0 ? void 0 : _d.at(1)) || undefined;
         if (namaMakul && kodeMakul && sks && makulWhiteList.includes(namaMakul)) {
-            return getJadwalMakul(kodeMakul);
+            return getJadwalMakul(kodeMakul, instance);
         }
         return Promise.resolve(undefined);
     })).then((values) => {
@@ -116,7 +120,7 @@ const shorterNamaMakul = (namaMakul) => {
     const result = (matches === null || matches === void 0 ? void 0 : matches.map((match) => match.at(0)).join('')) || namaMakul;
     return result.padEnd(4, ' ');
 };
-const getJadwalMakul = (kodeMakul) => __awaiter(void 0, void 0, void 0, function* () {
+const getJadwalMakul = (kodeMakul, instance) => __awaiter(void 0, void 0, void 0, function* () {
     const response = yield instance
         .post('https://siakad.uns.ac.id/registrasi/input-krs/jadwal-makul', new URLSearchParams({
         kodeMk: kodeMakul,
@@ -133,11 +137,7 @@ const getJadwalMakul = (kodeMakul) => __awaiter(void 0, void 0, void 0, function
 // if run directly, run main
 if (require.main === module) {
     const envPath = process.argv.at(2) || '.env';
-    dotenv_1.default.config({
-        path: envPath,
-        override: true,
-    });
     console.log(`Menggunakan konfigurasi dari ${envPath}`);
-    main();
+    main(envPath);
 }
 exports.default = main;

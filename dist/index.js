@@ -20,27 +20,31 @@ const kirim_pin_1 = __importDefault(require("./kirim-pin"));
 const csrf_krs_1 = __importDefault(require("./csrf-krs"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const prompts = require('prompts');
-const main = () => __awaiter(void 0, void 0, void 0, function* () {
+const main = (envPath) => __awaiter(void 0, void 0, void 0, function* () {
+    dotenv_1.default.config({
+        path: envPath,
+        override: true,
+    });
     // ask user which action to take
     const action = yield askAction();
     switch (action) {
         case 'ambil':
-            (0, ambil_makul_1.default)();
+            (0, ambil_makul_1.default)(envPath);
             break;
         case 'bulkKuota':
-            (0, check_bulk_kuota_1.default)();
+            (0, check_bulk_kuota_1.default)(envPath);
             break;
         case 'kuota':
-            (0, check_kuota_1.default)();
+            (0, check_kuota_1.default)(envPath);
             break;
         case 'diambil':
-            (0, check_diambil_1.default)();
+            (0, check_diambil_1.default)(envPath);
             break;
         case 'kirimPin':
-            (0, kirim_pin_1.default)();
+            (0, kirim_pin_1.default)(envPath);
             break;
         case 'ambilToken':
-            (0, csrf_krs_1.default)();
+            (0, csrf_krs_1.default)(envPath);
             break;
         default:
             console.log('Invalid action');
@@ -66,10 +70,6 @@ const askAction = () => __awaiter(void 0, void 0, void 0, function* () {
 // if run directly, run main
 if (require.main === module) {
     const envPath = process.argv.at(2) || '.env';
-    dotenv_1.default.config({
-        path: envPath,
-        override: true,
-    });
     console.log(`Menggunakan konfigurasi dari ${envPath}`);
-    main();
+    main(envPath);
 }

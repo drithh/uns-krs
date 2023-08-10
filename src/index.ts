@@ -7,27 +7,31 @@ import csrfKRS from './csrf-krs';
 import dotenv from 'dotenv';
 const prompts = require('prompts');
 
-const main = async () => {
+const main = async (envPath: string) => {
+  dotenv.config({
+    path: envPath,
+    override: true,
+  });
   // ask user which action to take
   const action = await askAction();
   switch (action) {
     case 'ambil':
-      ambilMakul();
+      ambilMakul(envPath);
       break;
     case 'bulkKuota':
-      checkBulkKuota();
+      checkBulkKuota(envPath);
       break;
     case 'kuota':
-      checkKuota();
+      checkKuota(envPath);
       break;
     case 'diambil':
-      checkDiambil();
+      checkDiambil(envPath);
       break;
     case 'kirimPin':
-      kirimPIN();
+      kirimPIN(envPath);
       break;
     case 'ambilToken':
-      csrfKRS();
+      csrfKRS(envPath);
       break;
     default:
       console.log('Invalid action');
@@ -55,10 +59,7 @@ const askAction = async () => {
 // if run directly, run main
 if (require.main === module) {
   const envPath = process.argv.at(2) || '.env';
-  dotenv.config({
-    path: envPath,
-    override: true,
-  });
+
   console.log(`Menggunakan konfigurasi dari ${envPath}`);
-  main();
+  main(envPath);
 }

@@ -1,3 +1,4 @@
+import { AxiosInstance } from 'axios';
 import { createInstance } from './axios-instance';
 import dotenv from 'dotenv';
 
@@ -16,16 +17,21 @@ type MataKuliah = {
 
 //  ubah sesuai dengan kelas yang ingin diambil
 
-const instance = createInstance();
 const REQUEST_DELAY_MILLISECONDS: number = 500;
 
-const main = async () => {
+const main = async (envPath: string) => {
+  dotenv.config({
+    path: envPath,
+    override: true,
+  });
+  const instance = createInstance(envPath);
+
   setInterval(() => {
-    getMataKuliahDiambil();
+    getMataKuliahDiambil(instance);
   }, REQUEST_DELAY_MILLISECONDS);
 };
 
-const getMataKuliahDiambil = async () => {
+const getMataKuliahDiambil = async (instance: AxiosInstance) => {
   const response = await instance
     .post('https://siakad.uns.ac.id/registrasi/input-krs/makul-diambil')
     .catch((error) => {
@@ -53,12 +59,9 @@ const getMataKuliahDiambil = async () => {
 // if run directly, run main
 if (require.main === module) {
   const envPath = process.argv.at(2) || '.env';
-  dotenv.config({
-    path: envPath,
-    override: true,
-  });
+
   console.log(`Menggunakan konfigurasi dari ${envPath}`);
-  main();
+  main(envPath);
 }
 
 export default main;

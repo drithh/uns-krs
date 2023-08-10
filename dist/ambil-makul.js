@@ -15,10 +15,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const axios_instance_1 = require("./axios-instance");
 const dotenv_1 = __importDefault(require("dotenv"));
 const REQUEST_DELAY_MILLISECONDS = 500;
-const instance = (0, axios_instance_1.createInstance)();
 // do not change this
 let AMBIL_COUNT = 0;
-const main = () => __awaiter(void 0, void 0, void 0, function* () {
+const main = (envPath) => __awaiter(void 0, void 0, void 0, function* () {
+    dotenv_1.default.config({
+        path: envPath,
+        override: true,
+    });
+    const instance = (0, axios_instance_1.createInstance)(envPath);
     if (process.env.KELAS === undefined || process.env.KODE_MK === undefined) {
         console.error('Kelas atau Kode MK belum diatur');
         process.exit(1);
@@ -26,10 +30,10 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     const kodeMk = process.env.KODE_MK;
     const kelas = process.env.KELAS;
     setInterval(() => {
-        ambilKelas(kodeMk, kelas);
+        ambilKelas(kodeMk, kelas, instance);
     }, REQUEST_DELAY_MILLISECONDS);
 });
-const ambilKelas = (kodeMk, kelas) => __awaiter(void 0, void 0, void 0, function* () {
+const ambilKelas = (kodeMk, kelas, instance) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(`Mencoba mengambil ${kodeMk} kelas ${kelas} ke-${++AMBIL_COUNT}`);
     const response = yield instance
         .post('https://siakad.uns.ac.id/registrasi/input-krs/simpan-ke-krs', new URLSearchParams({
@@ -39,8 +43,10 @@ const ambilKelas = (kodeMk, kelas) => __awaiter(void 0, void 0, void 0, function
         .catch((error) => {
         console.debug(error);
         console.error(`Gagal mengambil kelas status-code: ${error.response.status}`);
-        process.exit(1);
+        return;
     });
+    if (response === undefined)
+        return;
     console.log(response.data);
     if (response.data.code == 200) {
         console.log('Kelas berhasil diambil');
@@ -50,11 +56,7 @@ const ambilKelas = (kodeMk, kelas) => __awaiter(void 0, void 0, void 0, function
 // if run directly, run main
 if (require.main === module) {
     const envPath = process.argv.at(2) || '.env';
-    dotenv_1.default.config({
-        path: envPath,
-        override: true,
-    });
     console.log(`Menggunakan konfigurasi dari ${envPath}`);
-    main();
+    main(envPath);
 }
 exports.default = main;

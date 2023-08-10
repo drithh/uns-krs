@@ -2,9 +2,13 @@ import axios from 'axios';
 import https from 'https';
 import { constants } from 'crypto';
 import dotenv from 'dotenv';
-dotenv.config();
 
-export const createInstance = () => {
+export const createInstance = (envPath: string) => {
+  dotenv.config({
+    path: envPath,
+    override: true,
+    debug: true,
+  });
   if (process.env.DEBUG && process.env.DEBUG === '0') {
     console.debug = function () {};
   }

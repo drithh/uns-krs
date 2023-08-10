@@ -14,14 +14,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const axios_instance_1 = require("./axios-instance");
 const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config();
-const instance = (0, axios_instance_1.createInstance)();
 const REQUEST_DELAY_MILLISECONDS = 500;
 // don't change this
 let GET_TOKEN_COUNT = 0;
 let KIRIM_PIN_COUNT = 0;
 let IS_TOKEN_FOUND = false;
-const main = () => __awaiter(void 0, void 0, void 0, function* () {
+const main = (envPath) => __awaiter(void 0, void 0, void 0, function* () {
+    dotenv_1.default.config({
+        path: envPath,
+        override: true,
+        debug: true,
+    });
+    const instance = (0, axios_instance_1.createInstance)(envPath);
     if (process.env.PIN === undefined) {
         console.error('PIN belum diatur');
         process.exit(1);
@@ -29,19 +33,19 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     const pin = process.env.PIN;
     const requestCSRF = setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
         console.log(`Mencoba mengambil token CSRF ke-${++GET_TOKEN_COUNT} kali`);
-        const token = yield getCSRFToken();
+        const token = yield getCSRFToken(instance);
         if (token !== undefined && !IS_TOKEN_FOUND) {
             console.log(`Token didapatkan: ${token}`);
             IS_TOKEN_FOUND = true;
             clearInterval(requestCSRF);
             setInterval(() => {
                 console.log(`Mencoba mengirim pin ke-${++KIRIM_PIN_COUNT} kali`);
-                kirimPin(token, pin);
+                kirimPin(token, pin, instance);
             }, REQUEST_DELAY_MILLISECONDS);
         }
     }), REQUEST_DELAY_MILLISECONDS);
 });
-const getCSRFToken = () => __awaiter(void 0, void 0, void 0, function* () {
+const getCSRFToken = (instance) => __awaiter(void 0, void 0, void 0, function* () {
     const response = yield instance
         .get('https://siakad.uns.ac.id/registrasi/biodata/cek-pin-krs', {
         validateStatus: (status) => status >= 200 && status < 303,
@@ -62,7 +66,7 @@ const getCSRFToken = () => __awaiter(void 0, void 0, void 0, function* () {
         process.exit(0);
     }
 });
-const kirimPin = (token, pin) => __awaiter(void 0, void 0, void 0, function* () {
+const kirimPin = (token, pin, instance) => __awaiter(void 0, void 0, void 0, function* () {
     const response = yield instance
         .post('https://siakad.uns.ac.id/registrasi/biodata/cek-pin-krs', new URLSearchParams({
         _csrf: token,
@@ -82,11 +86,7 @@ const kirimPin = (token, pin) => __awaiter(void 0, void 0, void 0, function* () 
 // if run directly, run main
 if (require.main === module) {
     const envPath = process.argv.at(2) || '.env';
-    dotenv_1.default.config({
-        path: envPath,
-        override: true,
-    });
     console.log(`Menggunakan konfigurasi dari ${envPath}`);
-    main();
+    main(envPath);
 }
 exports.default = main;

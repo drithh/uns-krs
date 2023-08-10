@@ -15,21 +15,25 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const axios_instance_1 = require("./axios-instance");
 // load env
 const dotenv_1 = __importDefault(require("dotenv"));
-const instance = (0, axios_instance_1.createInstance)();
-const main = () => __awaiter(void 0, void 0, void 0, function* () {
+const main = (envPath) => __awaiter(void 0, void 0, void 0, function* () {
+    dotenv_1.default.config({
+        path: envPath,
+        override: true,
+    });
+    const instance = (0, axios_instance_1.createInstance)(envPath);
     if (process.env.KODE_MK === undefined) {
         console.error('KODE_MK belum diatur');
         process.exit(1);
     }
     const kodeMakul = process.env.KODE_MK;
     // setInterval(async () => {
-    const jadwalMakul = yield getJadwalMakul(kodeMakul);
+    const jadwalMakul = yield getJadwalMakul(kodeMakul, instance);
     jadwalMakul.forEach((jadwal) => {
         console.log(`${jadwal.nama} ${jadwal.nama_hari.padEnd(6, ' ')} ${jadwal.jam.padEnd(7, ' ')} Kelas:${jadwal.kelas} Kuota:${jadwal.kuota} Peserta:${jadwal.peserta}`);
     });
     // }, 5000);
 });
-const getJadwalMakul = (kodeMakul) => __awaiter(void 0, void 0, void 0, function* () {
+const getJadwalMakul = (kodeMakul, instance) => __awaiter(void 0, void 0, void 0, function* () {
     const response = yield instance
         .post('https://siakad.uns.ac.id/registrasi/input-krs/jadwal-makul', new URLSearchParams({
         kodeMk: kodeMakul,
@@ -51,11 +55,7 @@ const getJadwalMakul = (kodeMakul) => __awaiter(void 0, void 0, void 0, function
 // if run directly, run main
 if (require.main === module) {
     const envPath = process.argv.at(2) || '.env';
-    dotenv_1.default.config({
-        path: envPath,
-        override: true,
-    });
     console.log(`Menggunakan konfigurasi dari ${envPath}`);
-    main();
+    main(envPath);
 }
 exports.default = main;

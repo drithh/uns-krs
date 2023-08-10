@@ -1,3 +1,4 @@
+import { AxiosInstance } from 'axios';
 import { createInstance } from './axios-instance';
 
 // load env
@@ -26,16 +27,19 @@ type JadwalMakul = {
   pesan_tumbukan: string;
 };
 
-const instance = createInstance();
-
-const main = async () => {
+const main = async (envPath: string) => {
+  dotenv.config({
+    path: envPath,
+    override: true,
+  });
+  const instance = createInstance(envPath);
   if (process.env.KODE_MK === undefined) {
     console.error('KODE_MK belum diatur');
     process.exit(1);
   }
   const kodeMakul = process.env.KODE_MK;
   // setInterval(async () => {
-  const jadwalMakul: JadwalMakul[] = await getJadwalMakul(kodeMakul);
+  const jadwalMakul: JadwalMakul[] = await getJadwalMakul(kodeMakul, instance);
   jadwalMakul.forEach((jadwal) => {
     console.log(
       `${jadwal.nama} ${jadwal.nama_hari.padEnd(6, ' ')} ${jadwal.jam.padEnd(
@@ -47,7 +51,10 @@ const main = async () => {
   // }, 5000);
 };
 
-const getJadwalMakul: any = async (kodeMakul: string) => {
+const getJadwalMakul: any = async (
+  kodeMakul: string,
+  instance: AxiosInstance
+) => {
   const response = await instance
     .post(
       'https://siakad.uns.ac.id/registrasi/input-krs/jadwal-makul',
@@ -76,12 +83,9 @@ const getJadwalMakul: any = async (kodeMakul: string) => {
 // if run directly, run main
 if (require.main === module) {
   const envPath = process.argv.at(2) || '.env';
-  dotenv.config({
-    path: envPath,
-    override: true,
-  });
+
   console.log(`Menggunakan konfigurasi dari ${envPath}`);
-  main();
+  main(envPath);
 }
 
 export default main;

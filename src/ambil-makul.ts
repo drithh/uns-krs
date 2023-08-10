@@ -1,3 +1,4 @@
+import { AxiosInstance } from 'axios';
 import { createInstance } from './axios-instance';
 import dotenv from 'dotenv';
 
@@ -5,12 +6,17 @@ type Kode_MK = string;
 type Kelas = 'A' | 'B' | 'C' | 'D';
 
 const REQUEST_DELAY_MILLISECONDS: number = 500;
-const instance = createInstance();
 
 // do not change this
 let AMBIL_COUNT = 0;
 
-const main = async () => {
+const main = async (envPath: string) => {
+  dotenv.config({
+    path: envPath,
+    override: true,
+  });
+  const instance = createInstance(envPath);
+
   if (process.env.KELAS === undefined || process.env.KODE_MK === undefined) {
     console.error('Kelas atau Kode MK belum diatur');
     process.exit(1);
@@ -20,11 +26,15 @@ const main = async () => {
   const kelas: Kelas = process.env.KELAS as Kelas;
 
   setInterval(() => {
-    ambilKelas(kodeMk, kelas);
+    ambilKelas(kodeMk, kelas, instance);
   }, REQUEST_DELAY_MILLISECONDS);
 };
 
-const ambilKelas = async (kodeMk: Kode_MK, kelas: Kelas) => {
+const ambilKelas = async (
+  kodeMk: Kode_MK,
+  kelas: Kelas,
+  instance: AxiosInstance
+) => {
   console.log(`Mencoba mengambil ${kodeMk} kelas ${kelas} ke-${++AMBIL_COUNT}`);
   const response = await instance
     .post(
@@ -40,8 +50,9 @@ const ambilKelas = async (kodeMk: Kode_MK, kelas: Kelas) => {
       console.error(
         `Gagal mengambil kelas status-code: ${error.response.status}`
       );
-      process.exit(1);
+      return;
     });
+  if (response === undefined) return;
   console.log(response.data);
   if (response.data.code == 200) {
     console.log('Kelas berhasil diambil');
@@ -52,12 +63,8 @@ const ambilKelas = async (kodeMk: Kode_MK, kelas: Kelas) => {
 // if run directly, run main
 if (require.main === module) {
   const envPath = process.argv.at(2) || '.env';
-  dotenv.config({
-    path: envPath,
-    override: true,
-  });
   console.log(`Menggunakan konfigurasi dari ${envPath}`);
-  main();
+  main(envPath);
 }
 
 export default main;

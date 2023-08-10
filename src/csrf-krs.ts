@@ -1,20 +1,27 @@
+import { AxiosInstance } from 'axios';
 import { createInstance } from './axios-instance';
 import dotenv from 'dotenv';
 
-const instance = createInstance();
 const REQUEST_DELAY_MILLISECONDS: number = 500;
 
 // don't change this
 let GET_TOKEN_COUNT = 0;
 
-const main = async () => {
+const main = async (envPath: string) => {
+  dotenv.config({
+    path: envPath,
+    override: true,
+    debug: true,
+  });
+  const instance = createInstance(envPath);
+
   const requestCSRF = setInterval(() => {
     console.log(`Mencoba mengambil token CSRF ke-${++GET_TOKEN_COUNT} kali`);
-    getCSRFToken();
+    getCSRFToken(instance);
   }, REQUEST_DELAY_MILLISECONDS);
 };
 
-const getCSRFToken = async () => {
+const getCSRFToken = async (instance: AxiosInstance) => {
   const response = await instance
     .get('https://siakad.uns.ac.id/registrasi/input-krs/index')
     .catch((error) => {
@@ -27,7 +34,10 @@ const getCSRFToken = async () => {
   if (response.status == 200 && response.data.length > 0) {
     const regCSRF = /<meta name="csrf-token" content="(.*)">/;
     const csrfToken = response.data.match(regCSRF)[1];
-    console.log(`Token CSRF didapatkan: ${csrfToken}`);
+
+    const regNama = /<span class="hidden-xs pl15">(.*)<\/span>/;
+    const nama = response.data.match(regNama)[1];
+    console.log(`Token CSRF didapatkan: ${csrfToken} untuk ${nama}`);
     console.log(
       `Silahkan copy token di atas dan paste ke file .env sebagai value X_CSRF_TOKEN`
     );
@@ -38,12 +48,9 @@ const getCSRFToken = async () => {
 // if run directly, run main
 if (require.main === module) {
   const envPath = process.argv.at(2) || '.env';
-  dotenv.config({
-    path: envPath,
-    override: true,
-  });
+
   console.log(`Menggunakan konfigurasi dari ${envPath}`);
-  main();
+  main(envPath);
 }
 
 export default main;
